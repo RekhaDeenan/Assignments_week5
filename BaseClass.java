@@ -1,5 +1,3 @@
-//1. Try to run CreateLead Testcase 3 times sequentially using appropriate annotation attribute ( Use invocationCount =3)
-
 package week5.day2;
 
 
@@ -35,47 +33,4 @@ public class BaseClass {
 	public void postcondition() {
 driver.close();
 	}
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------	
-	package week5.day2;
-
-
-import java.time.Duration;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
-import io.github.bonigarcia.wdm.WebDriverManager;
-
-public class CreateLeadAssign extends BaseClass{
-
-	@Test(invocationCount = 3)
-	public void runCreateLead()  {
-		
-		driver.findElement(By.linkText("Create Lead")).click();
-		driver.findElement(By.id("createLeadForm_companyName")).sendKeys("TCS");
-		driver.findElement(By.id("createLeadForm_firstName")).sendKeys("Venba");
-		driver.findElement(By.id("createLeadForm_lastName")).sendKeys("T");
-		driver.findElement(By.name("submitButton")).click();
-		
 }
-
-}
-}
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	
-	<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Suite">
-<parameter name="url" value="http://leaftaps.com/opentaps"></parameter>
-<parameter name="username" value="DemoSalesManager"></parameter>
-<parameter name="password" value="crmsfa"></parameter>
-  <test thread-count="5" name="Test" verbose="5">
-    <classes>
-      <class name="week5.day2.CreateLeadAssign"/>
-    </classes>
-  </test> <!-- Test -->
-</suite> <!-- Suite -->
