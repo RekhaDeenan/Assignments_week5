@@ -1,0 +1,287 @@
+package week5.day2.assignment;
+
+import java.io.IOException;
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+//import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class BaseClass {
+	public ChromeDriver driver;
+	public String excelFileName;
+
+	@Parameters({ "url", "username", "password" })
+	@BeforeMethod
+	public void precondition(String url, String uname, String password) {
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get(url);
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+		driver.findElement(By.id("username")).sendKeys(uname);
+		driver.findElement(By.id("password")).sendKeys(password);
+		driver.findElement(By.className("decorativeSubmit")).click();
+		driver.findElement(By.linkText("CRM/SFA")).click();
+		driver.findElement(By.linkText("Leads")).click();
+	}
+	
+	@BeforeClass
+	@DataProvider
+	public String[][] sendData() throws IOException {
+		ReadExcel re = new ReadExcel();
+		String[][] data = re.excelRead(excelFileName);
+		return data;
+	}
+
+	@AfterMethod
+	public void postcondition() {
+		driver.close();
+	}
+}
+=======================================================================================
+
+package week5.day2.assignment;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class CreateLead extends BaseClass {
+	
+		
+	@Test(dataProvider = "sendData")
+	public void runCreateLead(String compname, String fname, String lname) {
+		driver.findElement(By.linkText("Create Lead")).click();
+		driver.findElement(By.id("createLeadForm_companyName")).sendKeys(compname);
+		driver.findElement(By.id("createLeadForm_firstName")).sendKeys(fname);
+		driver.findElement(By.id("createLeadForm_lastName")).sendKeys(lname);
+		driver.findElement(By.name("submitButton")).click();
+
+	}
+
+	@BeforeSuite
+	public void setFileName() {
+		excelFileName = "createLead";
+
+	}
+	/*
+	 * @DataProvider(name = "fetchData") public String[][] sendData() { String[][]
+	 * data = new String[3][3]; data[0][0] = "Test Leaf"; data[0][1] = "Rekha";
+	 * data[0][2] = "D";
+	 * 
+	 * data[1][0] = "Test Leaf"; data[1][1] = "Venba"; data[1][2] = "T";
+	 * 
+	 * data[2][0] = "TL"; data[2][1] = "Mani"; data[2][2] = "J"; return data; }
+	 */}
+===================================================================================
+package week5.day2.assignment;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class EditLead extends BaseClass {
+	@Test(dataProvider = "sendData")
+	public void runEditLead(String comp,String phnum) throws InterruptedException {
+		
+		driver.findElement(By.linkText("Leads")).click();
+		driver.findElement(By.linkText("Find Leads")).click();
+		driver.findElement(By.xpath("//span[text()='Phone']")).click();
+		driver.findElement(By.xpath("//input[@name='phoneNumber']")).sendKeys(phnum);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).click();
+		driver.findElement(By.linkText("Edit")).click();
+		driver.findElement(By.id("updateLeadForm_companyName")).sendKeys(comp);
+		driver.findElement(By.name("submitButton")).click();
+		
+}
+	@BeforeSuite
+	public void setFileName() {
+		excelFileName = "Editlead";
+
+	}
+}
+===========================================================================================================
+package week5.day2.assignment;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class DuplicateLead extends BaseClass {
+	@Test(dataProvider = "sendData")
+	public void runDuplicateLead(String phnum) throws InterruptedException {
+		
+		driver.findElement(By.linkText("Find Leads")).click();
+		driver.findElement(By.xpath("//span[text()='Phone']")).click();
+		driver.findElement(By.xpath("//input[@name='phoneNumber']")).sendKeys(phnum);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).click();
+		driver.findElement(By.linkText("Duplicate Lead")).click();
+		driver.findElement(By.name("submitButton")).click();
+		
+}
+	@BeforeSuite
+	public void setFileName() {
+		excelFileName = "DuplicateLead";
+
+	}
+
+	
+}
+=================================================================================================
+package week5.day2.assignment;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class MergeLead extends BaseClass {
+	@Test(dataProvider = "sendData")
+	public void runMergeLead(String lead_one,String lead_two) throws InterruptedException {
+		
+		driver.findElement(By.linkText("Merge Leads")).click();
+		driver.findElement(By.xpath("//img[@alt='Lookup']")).click();
+		Set<String> allWindows = driver.getWindowHandles();
+		List<String> allhandles = new ArrayList<String>(allWindows);
+		driver.switchTo().window(allhandles.get(1));
+		driver.findElement(By.xpath("//input[@name='firstName']")).sendKeys(lead_one);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		Thread.sleep(1000);
+		String leadID = driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).getText();
+		driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).click();
+		driver.switchTo().window(allhandles.get(0));
+		
+		driver.findElement(By.xpath("(//img[@alt='Lookup'])[2]")).click();
+		Set<String> allWindows2 = driver.getWindowHandles();
+		List<String> allhandles2 = new ArrayList<String>(allWindows2);
+		driver.switchTo().window(allhandles2.get(1));
+		driver.findElement(By.xpath("//input[@name='firstName']")).sendKeys(lead_two);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).click();
+		driver.switchTo().window(allhandles2.get(0));
+		driver.findElement(By.xpath("//a[text()='Merge']")).click();
+		driver.switchTo().alert().accept();
+		
+		driver.findElement(By.linkText("Find Leads")).click();
+		driver.findElement(By.xpath("//input[@name='id']")).sendKeys(leadID);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		String text = driver.findElement(By.className("x-paging-info")).getText();
+		if (text.equals("No records to display")) {
+			System.out.println("Text matched");
+		} else {
+			System.out.println("Text not matched");
+		}
+		
+		
+		
+	}
+	
+	@BeforeSuite
+	public void setFileName() {
+		excelFileName = "MergeLead";
+
+	}
+}
+=========================================================================================
+package week5.day2.assignment;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class DeleteLead extends BaseClass {
+	@Test(dataProvider = "sendData")
+	public void runDeleteLead(String phnum) throws InterruptedException {
+		
+		driver.findElement(By.linkText("Find Leads")).click();
+		driver.findElement(By.xpath("//span[text()='Phone']")).click();
+		driver.findElement(By.xpath("//input[@name='phoneNumber']")).sendKeys(phnum);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		Thread.sleep(2000);
+		String leadID = driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).getText();
+		driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).click();
+		driver.findElement(By.linkText("Delete")).click();
+		driver.findElement(By.linkText("Find Leads")).click();
+		driver.findElement(By.xpath("//input[@name='id']")).sendKeys(leadID);
+		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
+		String text = driver.findElement(By.className("x-paging-info")).getText();
+		if (text.equals("No records to display")) {
+			System.out.println("Text matched");
+		} else {
+			System.out.println("Text not matched");
+		}
+		
+}
+	@BeforeSuite
+	public void setFileName() {
+		excelFileName = "Deletelead";
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
